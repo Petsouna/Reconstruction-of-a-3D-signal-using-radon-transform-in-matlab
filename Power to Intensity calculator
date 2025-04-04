@@ -1,0 +1,58 @@
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+
+export default function LaserIntensityCalculator() {
+  const [power, setPower] = useState(0);
+  const [trans, setTrans] = useState(0.52);
+  const [radius, setRadius] = useState(4.2e-5);
+  const [repRate, setRepRate] = useState(200000);
+  const [pulseDuration, setPulseDuration] = useState(180e-15);
+  const [result, setResult] = useState(null);
+
+  const calculateIntensity = () => {
+    const denom = Math.PI * Math.pow(radius, 2) * repRate * trans * pulseDuration;
+    const intensity = (2 * power) / denom;
+    const intensityTWcm2 = intensity * 1e-8;
+    setResult({ intensity, intensityTWcm2 });
+  };
+
+  return (
+    <div className="max-w-xl mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4 text-center">Laser Intensity Calculator</h1>
+      <Card className="p-4">
+        <CardContent className="space-y-4">
+          <div>
+            <Label>Average Power (W)</Label>
+            <Input type="number" step="any" value={power} onChange={e => setPower(parseFloat(e.target.value))} />
+          </div>
+          <div>
+            <Label>Transmittance (0–1)</Label>
+            <Input type="number" step="any" value={trans} onChange={e => setTrans(parseFloat(e.target.value))} />
+          </div>
+          <div>
+            <Label>Beam Radius (m)</Label>
+            <Input type="number" step="any" value={radius} onChange={e => setRadius(parseFloat(e.target.value))} />
+          </div>
+          <div>
+            <Label>Repetition Rate (Hz)</Label>
+            <Input type="number" step="any" value={repRate} onChange={e => setRepRate(parseFloat(e.target.value))} />
+          </div>
+          <div>
+            <Label>Pulse Duration (s)</Label>
+            <Input type="number" step="any" value={pulseDuration} onChange={e => setPulseDuration(parseFloat(e.target.value))} />
+          </div>
+          <Button onClick={calculateIntensity} className="w-full">Calculate Intensity</Button>
+          {result && (
+            <div className="mt-4 bg-gray-100 p-3 rounded-xl shadow">
+              <p><strong>Intensity:</strong> {result.intensity.toExponential(3)} W/m²</p>
+              <p><strong>Intensity:</strong> {result.intensityTWcm2.toExponential(3)} TW/cm²</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
